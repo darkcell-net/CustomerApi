@@ -9,7 +9,8 @@ namespace CustomerApi.Mvc
         {
             services
                 .AddOptions()
-                .AddMvcCore() // TODO: should really add an exception filter for better formatting errors from the repository
+                .AddMvcCore(options => options.Filters.Add(typeof(ExceptionFilter)))
+                .AddDataAnnotations()
                 .AddApiExplorer()
                 .AddJsonFormatters(
                     settings =>

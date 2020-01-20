@@ -31,6 +31,11 @@ namespace CustomerRepository
         {
             Customer customer = await _customerContext.Customers.FindAsync(customerId);
 
+            if (customer is null)
+            {
+                throw new ResourceNotFoundException(customerId);
+            }
+
             _customerContext.Customers.Remove(customer);
 
             await _customerContext.SaveChangesAsync();
@@ -47,6 +52,11 @@ namespace CustomerRepository
         public async Task UpdateCustomer(Customer updateCustomer)
         {
             Customer customer = await _customerContext.Customers.FindAsync(updateCustomer.Id);
+
+            if (customer is null)
+            {
+                throw new ResourceNotFoundException(updateCustomer.Id);
+            }
 
             customer.Update(updateCustomer);
 

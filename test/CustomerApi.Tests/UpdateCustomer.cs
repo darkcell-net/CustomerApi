@@ -1,4 +1,6 @@
-﻿using CustomerApi.Tests.Fixtures;
+﻿using CustomerApi.Mvc;
+using CustomerApi.Tests.Fixtures;
+using CustomerRepository;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,10 +13,34 @@ namespace CustomerApi.Tests
 {
     public class When_Updating_A_Customer
     {
-        public class And_Customer_Does_Not_Exist
+        public class And_The_Customer_Details_Are_Missing
         {
             [Fact]
-            public async Task An_Error_Is_Returned()
+            public async Task An_Exception_Is_Raised()
+            {
+                var sut = new UpdateCustomerFixture();
+                Func<Task> test = async () => await sut.UpdateCustomer(null);
+
+                await test.Should().ThrowAsync<MissingRequestBodyException>();
+            }
+        }
+
+        public class And_The_Customer_Details_Are_Invalid
+        {
+            [Fact]
+            public async Task An_Unprocessible_Entity_Result_Is_Returned()
+            {
+                var sut = new UpdateCustomerFixture();
+                IActionResult response = await sut.UpdateCustomer(new Api.Customer());
+
+                response.Should().BeOfType<UnprocessableEntityResult>();
+            }
+        }
+
+        public class And_The_Customer_Does_Not_Exist
+        {
+            [Fact]
+            public async Task An_Exception_Is_Raised()
             {
                 string id = Guid.NewGuid().ToString();
                 const string firstName = nameof(firstName);
@@ -32,11 +58,11 @@ namespace CustomerApi.Tests
                 var sut = new UpdateCustomerFixture();
                 Func<Task> test = async () => await sut.UpdateCustomer(customer);
 
-                await test.Should().ThrowAsync<NullReferenceException>();
+                await test.Should().ThrowAsync<ResourceNotFoundException>();
             }
         }
 
-        public class And_Customer_Does_Exist
+        public class And_The_Customer_Does_Exist
         {
             [Fact]
             public async Task A_Success_Response_Is_Returned()

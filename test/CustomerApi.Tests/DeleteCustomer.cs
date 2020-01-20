@@ -1,4 +1,5 @@
 ﻿using CustomerApi.Tests.Fixtures;
+using CustomerRepository;
 using CustomerRepository.Entities;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +14,12 @@ namespace CustomerApi.Tests
         public class And_Customer_Does_Not_Exist
         {
             [Fact]
-            public async Task An_Error_Is_Returned()
+            public async Task An_Exception_Is_Raised()
             {
                 var sut = new DeleteCustomerFixture();
                 Func<Task> test = async () => await sut.DeleteCustomer(Guid.NewGuid().ToString());
 
-                await test.Should().ThrowAsync<ArgumentNullException>();
+                await test.Should().ThrowAsync<ResourceNotFoundException>();
             }
         }
 

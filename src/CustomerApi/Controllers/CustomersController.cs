@@ -1,13 +1,13 @@
 ﻿using CustomerApi.Commands;
 using CustomerApi.Models;
+using CustomerApi.Mvc;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using System.Threading.Tasks;
 
 namespace CustomerApi.Controllers
 {
     // TODO: add authorisation when required
-    // TODO: add exception filter to catch/reformat errors from the repository
     [Route("customers")]
     public class CustomersController : Controller
     {
@@ -18,13 +18,27 @@ namespace CustomerApi.Controllers
         /// <param name="command"></param>
         /// <returns>Created customer with its assigned identity</returns>
         /// <response code="201">Returns created customer <see cref="Customer"/></response>
+        /// <response code="400">Missing request body</response>
+        /// <response code="422">Invalid customer details <see cref="Customer"/></response>
         [HttpPost]
-        [Consumes(MediaTypeNames.Application.Json)]
-        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(ContentTypes.CustomerVersion1)]
+        [Produces(ContentTypes.CustomerVersion1)]
         public async Task<IActionResult> AddCustomer([FromBody] Customer customer, [FromServices] AddCustomerCommand command)
         {
+            if (customer == null)
+            {
+                throw new MissingRequestBodyException();
+            }
+
+            if (!TryValidateModel(customer))
+            {
+                return new UnprocessableEntityResult();
+            }
+
             Customer updatedCustomer = await command.Execute(customer);
             ObjectResult result = CreatedAtRoute(new { customerId = updatedCustomer.Id }, updatedCustomer); // TODO: No requirement for a redirect response
+
+            result.ContentTypes = new MediaTypeCollection { ContentTypes.CustomerVersion1 };
 
             return result;
         }
@@ -32,8 +46,6 @@ namespace CustomerApi.Controllers
         /// <summary>
         /// Delete a customer from the datastore
         /// </summary>
-        /// <remarks>
-        /// </remarks>
         /// <param name="customerId">Identity of the customer to delete</param>
         /// <param name="command"></param>
         /// <returns>Ok response</returns>
@@ -62,7 +74,7 @@ namespace CustomerApi.Controllers
 
             if (customers.Length == 0)
             {
-                return NotFound();
+                return new NotFoundObjectResult((firstName, lastName));
             }
 
             return Ok(customers);
@@ -75,10 +87,22 @@ namespace CustomerApi.Controllers
         /// <param name="command"></param>
         /// <returns>Ok response</returns>
         /// <response code="200">Update was performed successfully</response>
+        /// <response code="400">Missing request body</response>
+        /// <response code="422">Invalid customer details <see cref="Customer"/></response>
         [HttpPut]
-        [Consumes(MediaTypeNames.Application.Json)]
+        [Consumes(ContentTypes.CustomerVersion1)]
         public async Task<IActionResult> UpdateCustomer([FromBody] Customer customer, [FromServices] UpdateCustomerCommand command)
         {
+            if (customer == null)
+            {
+                throw new MissingRequestBodyException();
+            }
+
+            if (!TryValidateModel(customer))
+            {
+                return new UnprocessableEntityResult();
+            }
+
             await command.Execute(customer);
 
             return Ok();

@@ -44,6 +44,7 @@ namespace CustomerApi.Tests.Fixtures
             IConfigurationRoot configuration = new ConfigurationBuilder().Build();
 
             IServiceCollection services = new ServiceCollection()
+                .AddLogging()
                 .AddMvcServices()
                 .AddCommands()
                 .AddMappers()

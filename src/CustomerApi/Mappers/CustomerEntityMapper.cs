@@ -9,7 +9,7 @@ namespace CustomerApi.Mappers
         {
             return new Entities.Customer
             {
-                DateOfBirth = customer.DateOfBirth.Value, // TODO: add test to check for a null DateOfBirth when adding new customer
+                DateOfBirth = customer.DateOfBirth.Value,
                 FirstName = customer.FirstName,
                 Id = customer.Id,
                 LastName = customer.LastName
