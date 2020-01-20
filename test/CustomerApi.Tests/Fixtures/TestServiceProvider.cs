@@ -47,7 +47,7 @@ namespace CustomerApi.Tests.Fixtures
                 .AddMvcServices()
                 .AddCommands()
                 .AddMappers()
-                .AddRepository()
+                .AddRepository(Guid.NewGuid().ToString())
                 .AddTransient(
                     provider => new CustomersController()
                     {

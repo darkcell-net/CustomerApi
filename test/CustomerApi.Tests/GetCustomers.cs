@@ -1,4 +1,3 @@
-using CustomerApi.Models;
 using CustomerApi.Tests.Fixtures;
 using CustomerApi.Tests.TheoryData;
 using FluentAssertions;
@@ -29,7 +28,7 @@ namespace CustomerApi.Tests
             [Theory, ClassData(typeof(GetCustomersTheories))]
             public async Task The_Customers_Are_Returned(GetCustomersTheoryData theoryData)
             {
-                var expectedResponse = new ObjectResult(new[] { theoryData.ExpectedResponse })
+                var expectedResponse = new ObjectResult(theoryData.ExpectedResponse)
                 {
                     StatusCode = (int)HttpStatusCode.OK
                 };
@@ -38,9 +37,7 @@ namespace CustomerApi.Tests
                     .WithCustomerRepositoryData(theoryData.ExistingCustomers);
                 IActionResult response = await sut.GetCustomers(theoryData.FirstName, theoryData.LastName);
 
-                ((ObjectResult)response).StatusCode.Should().Be(expectedResponse.StatusCode);
-                ((ObjectResult)response).Value.GetType().Should().Be(theoryData.ExpectedResponse.GetType());
-                ((Customer[])((ObjectResult)response).Value).Should().BeEquivalentTo(theoryData.ExpectedResponse, options => options.Excluding(c => c.Id));
+                ((ObjectResult)response).Should().BeEquivalentTo(expectedResponse);
             }
         }
     }

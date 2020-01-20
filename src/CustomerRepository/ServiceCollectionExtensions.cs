@@ -5,10 +5,10 @@ namespace CustomerRepository
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRepository(this IServiceCollection services)
+        public static IServiceCollection AddRepository(this IServiceCollection services, string databaseName)
         {
             return services
-                .AddDbContext<CustomerContext>(options => options.UseInMemoryDatabase(nameof(CustomerRepository)))
+                .AddDbContext<CustomerContext>(options => options.UseInMemoryDatabase(databaseName))
                 .AddScoped<ICustomerRepository, CustomerRepository>()
                 .AddSingleton<IIdentityGenerator, IdentityGenerator>();
         }
