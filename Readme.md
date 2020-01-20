@@ -27,10 +27,10 @@ HTTP GET `localhost:6000/swagger/v1/swagger.json`
 2. Searching for customers
 HTTP GET `localhost:6000/customers?FirstName=first&LastName=last`
 3. Adding a new customer
-HTTP POST `localhost:6000/customers` using a `Customer` body
+HTTP POST `localhost:6000/customers` using a `Customer` body with a `application/vnd.darkcell.customer.v1+json` content type
 Returns the created customer with its associated id.
 4. Updating an existing customer
-HTTP PUT `localhost:6000/customers` using a `Customer` body
+HTTP PUT `localhost:6000/customers` using a `Customer` body with a `application/vnd.darkcell.customer.v1+json` content type
 5. Deleting a customer
 HTTP DELETE `localhost:6000/customers/id`
 `id` is generated when adding the customer.
